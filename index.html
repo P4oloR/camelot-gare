@@ -77,6 +77,9 @@
     .btn-success:hover { background: #218838; }
     .btn-info { background: #17a2b8; color: white; }
     .btn-info:hover { background: #138496; }
+    .btn-copy { background: #e9ecef; color: #333; padding: 4px 10px; font-size: 12px; }
+    .btn-copy:hover { background: #dee2e6; }
+    .btn-copy.copied { background: #d4edda; color: #155724; }
 
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; }
@@ -94,7 +97,7 @@
     .modal-overlay.open { display: flex; }
     .modal {
       background: white; border-radius: 8px; padding: 24px;
-      width: 90%; max-width: 680px; max-height: 90vh; overflow-y: auto;
+      width: 90%; max-width: 780px; max-height: 90vh; overflow-y: auto;
     }
     .modal h2 { margin-bottom: 16px; color: #1a472a; }
     .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
@@ -105,7 +108,7 @@
     tr:hover td { background: #f8f9fa; }
 
     .slot-row {
-      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
       gap: 8px; align-items: end; margin-bottom: 8px;
     }
     .slot-row .form-group { margin-bottom: 0; }
@@ -149,6 +152,40 @@
     }
     .estrattore-stato.ok { color: #28a745; font-style: normal; font-weight: bold; }
     .estrattore-stato.err { color: #dc3545; font-style: normal; }
+
+    /* PANNELLO DATI SITO */
+    .dati-sito-box {
+      background: #fff8e1; border: 2px solid #f0c040; border-radius: 8px;
+      padding: 20px; margin-bottom: 20px; display: none;
+    }
+    .dati-sito-box h3 { color: #856404; margin-bottom: 16px; font-size: 16px; }
+    .campo-copia {
+      display: flex; align-items: flex-start; gap: 8px;
+      margin-bottom: 12px; padding-bottom: 12px;
+      border-bottom: 1px solid #ffe082;
+    }
+    .campo-copia:last-child { border-bottom: none; margin-bottom: 0; }
+    .campo-label {
+      font-size: 11px; font-weight: bold; color: #856404;
+      text-transform: uppercase; min-width: 140px; padding-top: 4px;
+    }
+    .campo-valore {
+      flex: 1; font-size: 13px; color: #333;
+      background: white; padding: 6px 10px; border-radius: 4px;
+      border: 1px solid #ffe082; word-break: break-all;
+      max-height: 80px; overflow-y: auto;
+    }
+    .campo-valore.html-preview {
+      max-height: 120px; font-family: monospace; font-size: 11px;
+      white-space: pre-wrap;
+    }
+    .campo-valore.nullo { color: #999; font-style: italic; }
+
+    /* SLOT SITO */
+    .slot-sito-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    .slot-sito-table th { background: #f0c040; color: #333; padding: 6px 8px; text-align: left; }
+    .slot-sito-table td { padding: 6px 8px; border-bottom: 1px solid #ffe082; }
+    .slot-sito-table tr:hover td { background: #fffde7; }
   </style>
 </head>
 <body>
@@ -178,8 +215,6 @@
   </nav>
 
   <div class="container">
-
-    <!-- SEZIONE GARE -->
     <div class="section active" id="section-gare">
       <div class="top-bar">
         <h2>Catalogo Gare</h2>
@@ -191,7 +226,6 @@
       <div id="lista-gare"><div class="loading">Caricamento...</div></div>
     </div>
 
-    <!-- SEZIONE ISCRITTI -->
     <div class="section" id="section-iscritti">
       <div class="top-bar">
         <h2>Iscritti</h2>
@@ -203,14 +237,12 @@
       <div id="lista-iscritti"><div class="loading">Caricamento...</div></div>
     </div>
 
-    <!-- SEZIONE DA ISCRIVERE -->
     <div class="section" id="section-daIscrivere">
       <div class="top-bar">
         <h2>⚠️ Da Iscrivere Ufficialmente</h2>
       </div>
       <div id="lista-daIscrivere"><div class="loading">Caricamento...</div></div>
     </div>
-
   </div>
 </div>
 
@@ -232,6 +264,80 @@
       </div>
       <button class="btn btn-info" onclick="estraiDati()">🔍 Estrai e compila campi</button>
       <div class="estrattore-stato" id="estrat-stato"></div>
+    </div>
+
+    <!-- PANNELLO DATI PER IL SITO -->
+    <div class="dati-sito-box" id="dati-sito-box">
+      <h3>📋 Dati estratti per il sito Team Camelot</h3>
+      
+      <div class="campo-copia">
+        <div class="campo-label">Titolo</div>
+        <div class="campo-valore" id="ds-nome">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-nome', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Data Evento</div>
+        <div class="campo-valore" id="ds-data">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-data', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Ora</div>
+        <div class="campo-valore" id="ds-ora">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-ora', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Località</div>
+        <div class="campo-valore" id="ds-localita">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-localita', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Distanza</div>
+        <div class="campo-valore" id="ds-distanza">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-distanza', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Email contatto</div>
+        <div class="campo-valore" id="ds-email">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-email', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Sito Web Gara</div>
+        <div class="campo-valore" id="ds-sito">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-sito', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Link Facebook</div>
+        <div class="campo-valore" id="ds-facebook">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-facebook', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Regolamento Gara</div>
+        <div class="campo-valore" id="ds-regolamento">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-regolamento', this)">Copia</button>
+      </div>
+      <div class="campo-copia">
+        <div class="campo-label">Descrizione HTML<br><small style="font-weight:normal;color:#999">(incolla nell'editor)</small></div>
+        <div class="campo-valore html-preview" id="ds-html">—</div>
+        <button class="btn btn-copy" onclick="copiaCampo('ds-html', this)">Copia</button>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div class="campo-label" style="margin-bottom: 8px;">Slot Iscrizioni (date già scalate -4 giorni)</div>
+        <table class="slot-sito-table">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Data Inizio</th>
+              <th>Scadenza Reale</th>
+              <th>Scadenza da inserire (-4gg)</th>
+              <th>Importo (€)</th>
+              <th>Distanza</th>
+              <th>Tipo Gara</th>
+            </tr>
+          </thead>
+          <tbody id="ds-slots"></tbody>
+        </table>
+      </div>
     </div>
 
     <input type="hidden" id="gara-id" />
@@ -276,7 +382,7 @@
 
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modal-gara')">Annulla</button>
-      <button class="btn btn-primary" onclick="salvaGara()">Salva</button>
+      <button class="btn btn-primary" onclick="salvaGara()">💾 Salva Gara</button>
     </div>
   </div>
 </div>
@@ -330,6 +436,7 @@ let gare = [];
 let iscritti = [];
 let estrattoreTab = 'testo';
 let slotCount = 0;
+let datiEstratti = null;
 
 // ===== LOGIN =====
 async function doLogin() {
@@ -397,6 +504,12 @@ function setEstratTab(tab, btn) {
   document.getElementById('estrat-url').style.display = tab === 'url' ? 'block' : 'none';
 }
 
+function formattaData(dataStr) {
+  if (!dataStr) return null;
+  const [y, m, d] = dataStr.split('-');
+  return `${d}/${m}/${y}`;
+}
+
 async function estraiDati() {
   const stato = document.getElementById('estrat-stato');
   stato.textContent = '⏳ Estrazione in corso...';
@@ -420,7 +533,9 @@ async function estraiDati() {
       return;
     }
 
-    // Compila i campi
+    datiEstratti = result;
+
+    // Compila campi form
     if (result.nome) document.getElementById('gara-nome').value = result.nome;
     if (result.data) document.getElementById('gara-data').value = result.data;
     if (result.ora) document.getElementById('gara-ora').value = result.ora;
@@ -437,13 +552,72 @@ async function estraiDati() {
       result.slots.forEach(s => addSlot(s));
     }
 
-    stato.textContent = '✅ Dati estratti! Controlla e correggi se necessario, poi clicca Salva.';
+    // Mostra pannello dati sito
+    popolaDatiSito(result);
+    document.getElementById('dati-sito-box').style.display = 'block';
+
+    stato.textContent = '✅ Dati estratti! Controlla il pannello giallo, poi clicca Salva.';
     stato.className = 'estrattore-stato ok';
 
   } catch (err) {
     stato.textContent = `❌ Errore: ${err.message}`;
     stato.className = 'estrattore-stato err';
   }
+}
+
+function popolaDatiSito(r) {
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (val) {
+      el.textContent = val;
+      el.classList.remove('nullo');
+    } else {
+      el.textContent = 'Non trovato';
+      el.classList.add('nullo');
+    }
+  };
+
+  set('ds-nome', r.nome);
+  set('ds-data', r.data ? formattaData(r.data) : null);
+  set('ds-ora', r.ora);
+  set('ds-localita', r.localita);
+  set('ds-distanza', r.distanza);
+  set('ds-email', r.email);
+  set('ds-sito', r.sito);
+  set('ds-facebook', r.facebook);
+  set('ds-regolamento', r.regolamento);
+  set('ds-html', r.descrizione_html);
+
+  // Slot tabella
+  const tbody = document.getElementById('ds-slots');
+  if (r.slots && r.slots.length > 0) {
+    tbody.innerHTML = r.slots.map((s, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${s.inizio ? formattaData(s.inizio) : '—'}</td>
+        <td>${s.scadenza_reale ? formattaData(s.scadenza_reale) : '—'}</td>
+        <td><strong style="color:#1a472a">${s.scadenza ? formattaData(s.scadenza) : '—'}</strong></td>
+        <td>€ ${s.importo || '—'}</td>
+        <td>${s.distanza || r.distanza || '—'}</td>
+        <td>${s.tipo || '—'}</td>
+      </tr>
+    `).join('');
+  } else {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999">Nessuno slot trovato</td></tr>';
+  }
+}
+
+function copiaCampo(id, btn) {
+  const el = document.getElementById(id);
+  const testo = el.textContent;
+  if (!testo || testo === 'Non trovato' || testo === '—') return;
+  navigator.clipboard.writeText(testo);
+  btn.textContent = '✅ Copiato';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.textContent = 'Copia';
+    btn.classList.remove('copied');
+  }, 2000);
 }
 
 // ===== GARE =====
@@ -477,7 +651,9 @@ function openModalGara(id = null) {
   document.getElementById('estrat-stato').textContent = '';
   document.getElementById('estrat-testo').value = '';
   document.getElementById('estrat-url').value = '';
+  document.getElementById('dati-sito-box').style.display = 'none';
   slotCount = 0;
+  datiEstratti = null;
 
   if (id) {
     const g = gare.find(x => x.id === id);
@@ -514,8 +690,12 @@ function addSlot(data = null) {
       <input type="date" id="slot-inizio-${n}" value="${data?.inizio || ''}" />
     </div>
     <div class="form-group">
-      <label>Scadenza Slot ${n}</label>
+      <label>Scadenza (-4gg)</label>
       <input type="date" id="slot-scadenza-${n}" value="${data?.scadenza || ''}" />
+    </div>
+    <div class="form-group">
+      <label>Scadenza Reale</label>
+      <input type="date" id="slot-scadenza-reale-${n}" value="${data?.scadenza_reale || ''}" />
     </div>
     <div class="form-group">
       <label>Importo (€)</label>
@@ -545,6 +725,7 @@ async function salvaGara() {
       slots.push({
         inizio: document.getElementById(`slot-inizio-${n}`).value,
         scadenza,
+        scadenza_reale: document.getElementById(`slot-scadenza-reale-${n}`).value,
         importo: document.getElementById(`slot-importo-${n}`).value,
         tipo: document.getElementById(`slot-tipo-${n}`).value,
       });
@@ -561,6 +742,9 @@ async function salvaGara() {
     sito: document.getElementById('gara-sito').value,
     facebook: document.getElementById('gara-facebook').value,
     regolamento: document.getElementById('gara-regolamento').value,
+    descrizione_html: datiEstratti?.descrizione_html || '',
+    descrizione_testo: datiEstratti?.descrizione_testo || '',
+    email: datiEstratti?.email || '',
     slots,
   };
 
