@@ -720,6 +720,27 @@ function openModalGara(id = null) {
     document.getElementById('gara-facebook').value = g.facebook || '';
     document.getElementById('gara-regolamento').value = g.regolamento || '';
     (g.slots || []).forEach(s => addSlot(s));
+
+    // Ripristina dati estratti e mostra pannello giallo se disponibili
+    if (g.descrizione_html || g.descrizione_testo) {
+      datiEstratti = {
+        nome: g.nome,
+        data: g.data,
+        ora: g.ora,
+        localita: g.localita,
+        distanza: g.distanza,
+        sito: g.sito,
+        facebook: g.facebook,
+        regolamento: g.regolamento,
+        email: g.email || null,
+        descrizione_html: g.descrizione_html || null,
+        descrizione_testo: g.descrizione_testo || null,
+        slots: g.slots || [],
+      };
+      popolaDatiSito(datiEstratti);
+      document.getElementById('dati-sito-box').style.display = 'block';
+    }
+
   } else {
     document.getElementById('modal-gara-title').textContent = 'Nuova Gara';
     ['gara-id','gara-nome','gara-data','gara-ora','gara-localita','gara-distanza','gara-sito','gara-facebook','gara-regolamento'].forEach(id => {
