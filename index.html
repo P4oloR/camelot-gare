@@ -88,6 +88,7 @@
       border-radius: 4px; font-size: 14px;
     }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     
     .modal-overlay {
       display: none; position: fixed; inset: 0;
@@ -120,6 +121,7 @@
     .badge-green { background: #d4edda; color: #155724; }
     .badge-orange { background: #fff3cd; color: #856404; }
     .badge-red { background: #f8d7da; color: #721c24; }
+    .badge-blue { background: #cce5ff; color: #004085; }
 
     .search-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
     .search-bar input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; }
@@ -142,7 +144,7 @@
       cursor: pointer; font-size: 12px; background: white; color: #1a472a;
     }
     .estrattore-tabs button.active { background: #1a472a; color: white; }
-    .estrattore-input textarea, .estrattore-input input {
+    .estrattore-input textarea, .estrattore-input input[type="url"] {
       width: 100%; padding: 10px; border: 1px solid #ddd;
       border-radius: 4px; font-size: 13px; margin-bottom: 8px;
     }
@@ -152,6 +154,17 @@
     }
     .estrattore-stato.ok { color: #28a745; font-style: normal; font-weight: bold; }
     .estrattore-stato.err { color: #dc3545; font-style: normal; }
+
+    /* PDF UPLOAD */
+    .pdf-dropzone {
+      border: 2px dashed #1a472a; border-radius: 8px; padding: 30px;
+      text-align: center; cursor: pointer; background: white;
+      margin-bottom: 8px; transition: background 0.2s;
+    }
+    .pdf-dropzone:hover { background: #f0f9f0; }
+    .pdf-dropzone.has-file { background: #e8f5e9; border-style: solid; }
+    .pdf-dropzone p { color: #666; font-size: 13px; margin-top: 8px; }
+    .pdf-dropzone .pdf-nome { color: #1a472a; font-weight: bold; font-size: 14px; }
 
     /* PANNELLO DATI SITO */
     .dati-sito-box {
@@ -181,7 +194,6 @@
     }
     .campo-valore.nullo { color: #999; font-style: italic; }
 
-    /* SLOT SITO */
     .slot-sito-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
     .slot-sito-table th { background: #f0c040; color: #333; padding: 6px 8px; text-align: left; }
     .slot-sito-table td { padding: 6px 8px; border-bottom: 1px solid #ffe082; }
@@ -257,10 +269,24 @@
       <div class="estrattore-tabs">
         <button class="active" onclick="setEstratTab('testo', this)">Testo</button>
         <button onclick="setEstratTab('url', this)">Link URL</button>
+        <button onclick="setEstratTab('pdf', this)">📄 PDF</button>
       </div>
       <div class="estrattore-input">
         <textarea id="estrat-testo" placeholder="Incolla qui il testo del regolamento..."></textarea>
         <input type="url" id="estrat-url" placeholder="https://www.esempio-gara.it/regolamento" style="display:none;" />
+        <div id="estrat-pdf-zone" style="display:none;">
+          <div class="pdf-dropzone" id="pdf-dropzone" onclick="document.getElementById('pdf-input').click()"
+            ondragover="event.preventDefault(); this.style.background='#d4edda'"
+            ondragleave="this.style.background=''"
+            ondrop="handlePdfDrop(event)">
+            <div id="pdf-dropzone-content">
+              <div style="font-size:40px;">📄</div>
+              <p><strong>Trascina il PDF qui</strong> oppure clicca per sfogliare</p>
+              <p style="font-size:11px;margin-top:4px;">Solo file .pdf</p>
+            </div>
+          </div>
+          <input type="file" id="pdf-input" accept=".pdf" style="display:none;" onchange="handlePdfSelect(event)" />
+        </div>
       </div>
       <button class="btn btn-info" onclick="estraiDati()">🔍 Estrai e compila campi</button>
       <div class="estrattore-stato" id="estrat-stato"></div>
@@ -269,7 +295,6 @@
     <!-- PANNELLO DATI PER IL SITO -->
     <div class="dati-sito-box" id="dati-sito-box">
       <h3>📋 Dati estratti per il sito Team Camelot</h3>
-      
       <div class="campo-copia">
         <div class="campo-label">Titolo</div>
         <div class="campo-valore" id="ds-nome">—</div>
@@ -320,19 +345,14 @@
         <div class="campo-valore html-preview" id="ds-html">—</div>
         <button class="btn btn-copy" onclick="copiaCampo('ds-html', this)">Copia</button>
       </div>
-
       <div style="margin-top: 16px;">
         <div class="campo-label" style="margin-bottom: 8px;">Slot Iscrizioni (date già scalate -4 giorni)</div>
         <table class="slot-sito-table">
           <thead>
             <tr>
-              <th>N°</th>
-              <th>Data Inizio</th>
-              <th>Scadenza Reale</th>
-              <th>Scadenza da inserire (-4gg)</th>
-              <th>Importo (€)</th>
-              <th>Distanza</th>
-              <th>Tipo Gara</th>
+              <th>N°</th><th>Data Inizio</th><th>Scadenza Reale</th>
+              <th>Scadenza da inserire (-4gg)</th><th>Importo (€)</th>
+              <th>Distanza</th><th>Tipo Gara</th>
             </tr>
           </thead>
           <tbody id="ds-slots"></tbody>
@@ -437,6 +457,8 @@ let iscritti = [];
 let estrattoreTab = 'testo';
 let slotCount = 0;
 let datiEstratti = null;
+let pdfBase64 = null;
+let pdfMimeType = null;
 
 // ===== LOGIN =====
 async function doLogin() {
@@ -502,12 +524,49 @@ function setEstratTab(tab, btn) {
   btn.classList.add('active');
   document.getElementById('estrat-testo').style.display = tab === 'testo' ? 'block' : 'none';
   document.getElementById('estrat-url').style.display = tab === 'url' ? 'block' : 'none';
+  document.getElementById('estrat-pdf-zone').style.display = tab === 'pdf' ? 'block' : 'none';
+}
+
+// ===== PDF =====
+function handlePdfSelect(event) {
+  const file = event.target.files[0];
+  if (file) caricaPdf(file);
+}
+
+function handlePdfDrop(event) {
+  event.preventDefault();
+  document.getElementById('pdf-dropzone').style.background = '';
+  const file = event.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') caricaPdf(file);
+}
+
+function caricaPdf(file) {
+  pdfMimeType = file.type;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    pdfBase64 = e.target.result.split(',')[1];
+    document.getElementById('pdf-dropzone').classList.add('has-file');
+    document.getElementById('pdf-dropzone-content').innerHTML = `
+      <div style="font-size:40px;">✅</div>
+      <p class="pdf-nome">${file.name}</p>
+      <p style="font-size:11px;color:#666;margin-top:4px;">${(file.size/1024/1024).toFixed(2)} MB — clicca per cambiare</p>
+    `;
+  };
+  reader.readAsDataURL(file);
 }
 
 function formattaData(dataStr) {
   if (!dataStr) return null;
   const [y, m, d] = dataStr.split('-');
   return `${d}/${m}/${y}`;
+}
+
+function dataOggi() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function dataOggiLeggibile() {
+  return formattaData(dataOggi());
 }
 
 async function estraiDati() {
@@ -517,15 +576,17 @@ async function estraiDati() {
 
   const testo = estrattoreTab === 'testo' ? document.getElementById('estrat-testo').value.trim() : null;
   const url = estrattoreTab === 'url' ? document.getElementById('estrat-url').value.trim() : null;
+  const pdf = estrattoreTab === 'pdf' ? pdfBase64 : null;
+  const pdfMime = estrattoreTab === 'pdf' ? pdfMimeType : null;
 
-  if (!testo && !url) {
-    stato.textContent = '⚠️ Inserisci un testo o un URL.';
+  if (!testo && !url && !pdf) {
+    stato.textContent = '⚠️ Inserisci un testo, un URL o carica un PDF.';
     stato.className = 'estrattore-stato err';
     return;
   }
 
   try {
-    const result = await api('/estrai', 'POST', { testo, url });
+    const result = await api('/estrai', 'POST', { testo, url, pdf, pdfMime });
 
     if (result.error) {
       stato.textContent = `❌ Errore: ${result.error}`;
@@ -568,15 +629,9 @@ async function estraiDati() {
 function popolaDatiSito(r) {
   const set = (id, val) => {
     const el = document.getElementById(id);
-    if (val) {
-      el.textContent = val;
-      el.classList.remove('nullo');
-    } else {
-      el.textContent = 'Non trovato';
-      el.classList.add('nullo');
-    }
+    if (val) { el.textContent = val; el.classList.remove('nullo'); }
+    else { el.textContent = 'Non trovato'; el.classList.add('nullo'); }
   };
-
   set('ds-nome', r.nome);
   set('ds-data', r.data ? formattaData(r.data) : null);
   set('ds-ora', r.ora);
@@ -588,7 +643,6 @@ function popolaDatiSito(r) {
   set('ds-regolamento', r.regolamento);
   set('ds-html', r.descrizione_html);
 
-  // Slot tabella
   const tbody = document.getElementById('ds-slots');
   if (r.slots && r.slots.length > 0) {
     tbody.innerHTML = r.slots.map((s, i) => `
@@ -614,10 +668,7 @@ function copiaCampo(id, btn) {
   navigator.clipboard.writeText(testo);
   btn.textContent = '✅ Copiato';
   btn.classList.add('copied');
-  setTimeout(() => {
-    btn.textContent = 'Copia';
-    btn.classList.remove('copied');
-  }, 2000);
+  setTimeout(() => { btn.textContent = 'Copia'; btn.classList.remove('copied'); }, 2000);
 }
 
 // ===== GARE =====
@@ -652,6 +703,7 @@ function openModalGara(id = null) {
   document.getElementById('estrat-testo').value = '';
   document.getElementById('estrat-url').value = '';
   document.getElementById('dati-sito-box').style.display = 'none';
+  pdfBase64 = null;
   slotCount = 0;
   datiEstratti = null;
 
@@ -777,7 +829,11 @@ function renderIscritti() {
   const el = document.getElementById('lista-iscritti');
   if (filtered.length === 0) { el.innerHTML = '<div class="empty">Nessun iscritto trovato.</div>'; return; }
   el.innerHTML = `<table>
-    <thead><tr><th>Nominativo</th><th>Gara</th><th>Slot Scadenza</th><th>Stato</th><th>Pagamento</th><th>Azioni</th></tr></thead>
+    <thead><tr>
+      <th>Nominativo</th><th>Gara</th><th>Slot Scadenza</th>
+      <th>Stato</th><th>Pagamento</th>
+      <th>Data Iscrizione</th><th>Data Uff.</th><th>Azioni</th>
+    </tr></thead>
     <tbody>${filtered.map(i => {
       const gara = gare.find(g => g.id === i.garaId);
       const statoClass = i.stato === 'Iscritto ufficialmente' ? 'badge-green' : 'badge-orange';
@@ -788,6 +844,8 @@ function renderIscritti() {
         <td>${i.slotScadenza || 'N/D'}</td>
         <td><span class="badge ${statoClass}">${i.stato}</span></td>
         <td><span class="badge ${pagClass}">${i.pagamento}</span></td>
+        <td><span class="badge badge-blue">${i.dataIscrizione || '—'}</span></td>
+        <td><span class="badge ${i.dataIscrizioneUfficiale ? 'badge-green' : 'badge-orange'}">${i.dataIscrizioneUfficiale || '—'}</span></td>
         <td>
           <button class="btn btn-warning" onclick="openModalIscritto('${i.id}')">✏️</button>
           <button class="btn btn-danger" onclick="eliminaIscritto('${i.id}')">🗑️</button>
@@ -834,16 +892,20 @@ function aggiornaSlotSelect(garaId, selected = null) {
 async function salvaIscritto() {
   const nome = document.getElementById('iscritto-nome').value.trim();
   if (!nome) { alert('Il nominativo è obbligatorio.'); return; }
-  const id = document.getElementById('iscritto-id').value || Date.now().toString();
+  const id = document.getElementById('iscritto-id').value;
+  const esistente = id ? iscritti.find(i => i.id === id) : null;
+  const nuovoId = id || Date.now().toString();
   const garaId = document.getElementById('iscritto-gara').value;
   const iscritto = {
-    id, nome, garaId,
+    id: nuovoId, nome, garaId,
     slotScadenza: document.getElementById('iscritto-slot').value,
     stato: document.getElementById('iscritto-stato').value,
     pagamento: document.getElementById('iscritto-pagamento').value,
     note: document.getElementById('iscritto-note').value,
+    dataIscrizione: esistente?.dataIscrizione || dataOggiLeggibile(),
+    dataIscrizioneUfficiale: esistente?.dataIscrizioneUfficiale || null,
   };
-  const idx = iscritti.findIndex(i => i.id === id);
+  const idx = iscritti.findIndex(i => i.id === nuovoId);
   if (idx >= 0) iscritti[idx] = iscritto; else iscritti.push(iscritto);
   await api('/iscritti', 'POST', iscritti);
   closeModal('modal-iscritto');
@@ -865,7 +927,10 @@ function renderDaIscrivere() {
   const el = document.getElementById('lista-daIscrivere');
   if (daIscrivere.length === 0) { el.innerHTML = '<div class="empty">✅ Nessun atleta da iscrivere ufficialmente.</div>'; return; }
   el.innerHTML = `<table>
-    <thead><tr><th>Nominativo</th><th>Gara</th><th>Scadenza Slot</th><th>Pagamento</th><th>Note</th><th>Azioni</th></tr></thead>
+    <thead><tr>
+      <th>Nominativo</th><th>Gara</th><th>Scadenza Slot</th>
+      <th>Pagamento</th><th>Data Iscrizione</th><th>Note</th><th>Azioni</th>
+    </tr></thead>
     <tbody>${daIscrivere.map(i => {
       const gara = gare.find(g => g.id === i.garaId);
       const pagClass = i.pagamento === 'Pagato' ? 'badge-green' : 'badge-red';
@@ -874,6 +939,7 @@ function renderDaIscrivere() {
         <td>${gara?.nome || 'N/D'}</td>
         <td>${i.slotScadenza || 'N/D'}</td>
         <td><span class="badge ${pagClass}">${i.pagamento}</span></td>
+        <td><span class="badge badge-blue">${i.dataIscrizione || '—'}</span></td>
         <td>${i.note || ''}</td>
         <td><button class="btn btn-success" onclick="marcaIscritto('${i.id}')">✅ Iscritto</button></td>
       </tr>`;
@@ -885,6 +951,7 @@ async function marcaIscritto(id) {
   const i = iscritti.find(x => x.id === id);
   if (!i) return;
   i.stato = 'Iscritto ufficialmente';
+  i.dataIscrizioneUfficiale = dataOggiLeggibile();
   await api('/iscritti', 'POST', iscritti);
   renderIscritti();
   renderDaIscrivere();
