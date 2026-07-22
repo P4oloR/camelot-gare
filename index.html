@@ -8,7 +8,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; }
     
-    /* LOGIN */
     #login-screen {
       display: flex; align-items: center; justify-content: center;
       min-height: 100vh; background: #1a472a;
@@ -30,7 +29,6 @@
     .login-box button:hover { background: #2d6a4f; }
     .error-msg { color: red; font-size: 13px; margin-top: 8px; }
 
-    /* APP */
     #app-screen { display: none; }
     header {
       background: #1a472a; color: white; padding: 12px 24px;
@@ -41,9 +39,7 @@
       background: rgba(255,255,255,0.2); color: white; border: none;
       padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 13px;
     }
-    nav {
-      background: #2d6a4f; display: flex; gap: 0;
-    }
+    nav { background: #2d6a4f; display: flex; gap: 0; }
     nav button {
       color: white; border: none; padding: 12px 24px;
       cursor: pointer; font-size: 14px; background: transparent;
@@ -53,12 +49,9 @@
     nav button:hover { background: rgba(255,255,255,0.1); }
     
     .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
-    
-    /* SEZIONI */
     .section { display: none; }
     .section.active { display: block; }
     
-    /* CARDS */
     .card {
       background: white; border-radius: 8px; padding: 20px;
       margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
@@ -67,10 +60,10 @@
     .card-meta { font-size: 13px; color: #666; margin-bottom: 12px; }
     .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     
-    /* BUTTONS */
     .btn {
       padding: 8px 16px; border: none; border-radius: 4px;
-      cursor: pointer; font-size: 13px; font-weight: bold;
+      cursor: pointer; font-size: 13px; font-weight: bold; text-decoration: none;
+      display: inline-block;
     }
     .btn-primary { background: #1a472a; color: white; }
     .btn-primary:hover { background: #2d6a4f; }
@@ -82,8 +75,9 @@
     .btn-secondary:hover { background: #5a6268; }
     .btn-success { background: #28a745; color: white; }
     .btn-success:hover { background: #218838; }
+    .btn-info { background: #17a2b8; color: white; }
+    .btn-info:hover { background: #138496; }
 
-    /* FORM */
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; }
     .form-group input, .form-group select, .form-group textarea {
@@ -92,7 +86,6 @@
     }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     
-    /* MODAL */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.5); z-index: 1000;
@@ -101,22 +94,22 @@
     .modal-overlay.open { display: flex; }
     .modal {
       background: white; border-radius: 8px; padding: 24px;
-      width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+      width: 90%; max-width: 680px; max-height: 90vh; overflow-y: auto;
     }
     .modal h2 { margin-bottom: 16px; color: #1a472a; }
     .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
 
-    /* TABELLA */
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { background: #1a472a; color: white; padding: 10px 8px; text-align: left; }
     td { padding: 8px; border-bottom: 1px solid #eee; }
     tr:hover td { background: #f8f9fa; }
 
-    /* SLOT */
-    .slot-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 8px; }
+    .slot-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      gap: 8px; align-items: end; margin-bottom: 8px;
+    }
     .slot-row .form-group { margin-bottom: 0; }
     
-    /* BADGE */
     .badge {
       display: inline-block; padding: 2px 8px; border-radius: 12px;
       font-size: 11px; font-weight: bold;
@@ -125,9 +118,7 @@
     .badge-orange { background: #fff3cd; color: #856404; }
     .badge-red { background: #f8d7da; color: #721c24; }
 
-    .search-bar {
-      display: flex; gap: 8px; margin-bottom: 16px; align-items: center;
-    }
+    .search-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
     .search-bar input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; }
     
     .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -135,6 +126,29 @@
     
     .loading { text-align: center; padding: 40px; color: #666; }
     .empty { text-align: center; padding: 40px; color: #999; font-style: italic; }
+
+    /* ESTRATTORE */
+    .estrattore-box {
+      background: #e8f5e9; border: 2px solid #1a472a; border-radius: 8px;
+      padding: 20px; margin-bottom: 20px;
+    }
+    .estrattore-box h3 { color: #1a472a; margin-bottom: 12px; font-size: 16px; }
+    .estrattore-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+    .estrattore-tabs button {
+      padding: 6px 14px; border: 1px solid #1a472a; border-radius: 4px;
+      cursor: pointer; font-size: 12px; background: white; color: #1a472a;
+    }
+    .estrattore-tabs button.active { background: #1a472a; color: white; }
+    .estrattore-input textarea, .estrattore-input input {
+      width: 100%; padding: 10px; border: 1px solid #ddd;
+      border-radius: 4px; font-size: 13px; margin-bottom: 8px;
+    }
+    .estrattore-input textarea { height: 120px; resize: vertical; }
+    .estrattore-stato {
+      font-size: 13px; color: #666; font-style: italic; margin-top: 8px;
+    }
+    .estrattore-stato.ok { color: #28a745; font-style: normal; font-weight: bold; }
+    .estrattore-stato.err { color: #dc3545; font-style: normal; }
   </style>
 </head>
 <body>
@@ -158,9 +172,9 @@
     <button onclick="doLogout()">Esci</button>
   </header>
   <nav>
-    <button class="active" onclick="showSection('gare')">🏃 Gare</button>
-    <button onclick="showSection('iscritti')">👥 Iscritti</button>
-    <button onclick="showSection('daIscrivere')">⚠️ Da Iscrivere</button>
+    <button class="active" onclick="showSection('gare', this)">🏃 Gare</button>
+    <button onclick="showSection('iscritti', this)">👥 Iscritti</button>
+    <button onclick="showSection('daIscrivere', this)">⚠️ Da Iscrivere</button>
   </nav>
 
   <div class="container">
@@ -204,6 +218,22 @@
 <div class="modal-overlay" id="modal-gara">
   <div class="modal">
     <h2 id="modal-gara-title">Nuova Gara</h2>
+
+    <!-- ESTRATTORE AI -->
+    <div class="estrattore-box">
+      <h3>🤖 Estrai dati con AI</h3>
+      <div class="estrattore-tabs">
+        <button class="active" onclick="setEstratTab('testo', this)">Testo</button>
+        <button onclick="setEstratTab('url', this)">Link URL</button>
+      </div>
+      <div class="estrattore-input">
+        <textarea id="estrat-testo" placeholder="Incolla qui il testo del regolamento..."></textarea>
+        <input type="url" id="estrat-url" placeholder="https://www.esempio-gara.it/regolamento" style="display:none;" />
+      </div>
+      <button class="btn btn-info" onclick="estraiDati()">🔍 Estrai e compila campi</button>
+      <div class="estrattore-stato" id="estrat-stato"></div>
+    </div>
+
     <input type="hidden" id="gara-id" />
     <div class="form-group">
       <label>Nome Gara *</label>
@@ -221,23 +251,23 @@
     </div>
     <div class="form-group">
       <label>Località</label>
-      <input type="text" id="gara-localita" placeholder="Es. Roma" />
+      <input type="text" id="gara-localita" />
     </div>
     <div class="form-group">
       <label>Distanza</label>
-      <input type="text" id="gara-distanza" placeholder="Es. 42 Km" />
+      <input type="text" id="gara-distanza" />
     </div>
     <div class="form-group">
       <label>Link Sito Gara</label>
-      <input type="url" id="gara-sito" placeholder="https://..." />
+      <input type="url" id="gara-sito" />
     </div>
     <div class="form-group">
       <label>Link Facebook</label>
-      <input type="url" id="gara-facebook" placeholder="https://facebook.com/..." />
+      <input type="url" id="gara-facebook" />
     </div>
     <div class="form-group">
       <label>Link Regolamento</label>
-      <input type="url" id="gara-regolamento" placeholder="https://..." />
+      <input type="url" id="gara-regolamento" />
     </div>
 
     <h3 style="margin: 16px 0 8px; color: #1a472a;">Slot Iscrizioni</h3>
@@ -295,58 +325,34 @@
 
 <script>
 const WORKER_URL = 'https://camelot-worker.paolo-ricciotti.workers.dev';
-
-// Credenziali locali (solo per confronto username)
-const UTENTI = {
-  'root': null,   // token impostato al login
-  'team': null
-};
-
 let TOKEN = null;
 let gare = [];
 let iscritti = [];
+let estrattoreTab = 'testo';
+let slotCount = 0;
 
 // ===== LOGIN =====
 async function doLogin() {
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value.trim();
-  
-  if (!user || !pass) {
-    document.getElementById('login-error').textContent = 'Inserisci username e password.';
-    return;
-  }
-
-  if (user !== 'root' && user !== 'team') {
-    document.getElementById('login-error').textContent = 'Username non valido.';
-    return;
-  }
-
-  // Prova il token
+  if (!user || !pass) { document.getElementById('login-error').textContent = 'Inserisci username e password.'; return; }
+  if (user !== 'root' && user !== 'team') { document.getElementById('login-error').textContent = 'Username non valido.'; return; }
   TOKEN = pass;
   const ok = await testToken();
-  if (!ok) {
-    document.getElementById('login-error').textContent = 'Password non corretta.';
-    TOKEN = null;
-    return;
-  }
-
+  if (!ok) { document.getElementById('login-error').textContent = 'Password non corretta.'; TOKEN = null; return; }
   localStorage.setItem('camelot_token', pass);
-  localStorage.setItem('camelot_user', user);
   avviaApp();
 }
 
 async function testToken() {
   try {
-    const r = await fetch(`${WORKER_URL}/gare`, {
-      headers: { 'Authorization': `Bearer ${TOKEN}` }
-    });
+    const r = await fetch(`${WORKER_URL}/gare`, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
     return r.ok;
   } catch { return false; }
 }
 
 function doLogout() {
   localStorage.removeItem('camelot_token');
-  localStorage.removeItem('camelot_user');
   TOKEN = null;
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app-screen').style.display = 'none';
@@ -360,10 +366,7 @@ async function avviaApp() {
 
 // ===== API =====
 async function api(path, method = 'GET', body = null) {
-  const opts = {
-    method,
-    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' }
-  };
+  const opts = { method, headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
   const r = await fetch(`${WORKER_URL}${path}`, opts);
   return r.json();
@@ -378,12 +381,69 @@ async function caricaDati() {
 }
 
 // ===== NAVIGAZIONE =====
-function showSection(name) {
+function showSection(name, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById(`section-${name}`).classList.add('active');
-  event.target.classList.add('active');
-  if (name === 'daIscrivere') renderDaIscrivere();
+  btn.classList.add('active');
+}
+
+// ===== ESTRATTORE =====
+function setEstratTab(tab, btn) {
+  estrattoreTab = tab;
+  document.querySelectorAll('.estrattore-tabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('estrat-testo').style.display = tab === 'testo' ? 'block' : 'none';
+  document.getElementById('estrat-url').style.display = tab === 'url' ? 'block' : 'none';
+}
+
+async function estraiDati() {
+  const stato = document.getElementById('estrat-stato');
+  stato.textContent = '⏳ Estrazione in corso...';
+  stato.className = 'estrattore-stato';
+
+  const testo = estrattoreTab === 'testo' ? document.getElementById('estrat-testo').value.trim() : null;
+  const url = estrattoreTab === 'url' ? document.getElementById('estrat-url').value.trim() : null;
+
+  if (!testo && !url) {
+    stato.textContent = '⚠️ Inserisci un testo o un URL.';
+    stato.className = 'estrattore-stato err';
+    return;
+  }
+
+  try {
+    const result = await api('/estrai', 'POST', { testo, url });
+
+    if (result.error) {
+      stato.textContent = `❌ Errore: ${result.error}`;
+      stato.className = 'estrattore-stato err';
+      return;
+    }
+
+    // Compila i campi
+    if (result.nome) document.getElementById('gara-nome').value = result.nome;
+    if (result.data) document.getElementById('gara-data').value = result.data;
+    if (result.ora) document.getElementById('gara-ora').value = result.ora;
+    if (result.localita) document.getElementById('gara-localita').value = result.localita;
+    if (result.distanza) document.getElementById('gara-distanza').value = result.distanza;
+    if (result.sito) document.getElementById('gara-sito').value = result.sito;
+    if (result.facebook) document.getElementById('gara-facebook').value = result.facebook;
+    if (result.regolamento) document.getElementById('gara-regolamento').value = result.regolamento;
+
+    // Slot
+    if (result.slots && result.slots.length > 0) {
+      document.getElementById('slots-container').innerHTML = '';
+      slotCount = 0;
+      result.slots.forEach(s => addSlot(s));
+    }
+
+    stato.textContent = '✅ Dati estratti! Controlla e correggi se necessario, poi clicca Salva.';
+    stato.className = 'estrattore-stato ok';
+
+  } catch (err) {
+    stato.textContent = `❌ Errore: ${err.message}`;
+    stato.className = 'estrattore-stato err';
+  }
 }
 
 // ===== GARE =====
@@ -391,38 +451,34 @@ function renderGare() {
   const search = document.getElementById('search-gare').value.toLowerCase();
   const filtered = gare.filter(g => g.nome.toLowerCase().includes(search));
   const el = document.getElementById('lista-gare');
-  
-  if (filtered.length === 0) {
-    el.innerHTML = '<div class="empty">Nessuna gara trovata.</div>';
-    return;
-  }
-
+  if (filtered.length === 0) { el.innerHTML = '<div class="empty">Nessuna gara trovata.</div>'; return; }
   el.innerHTML = filtered.map(g => {
-    const nSlot = (g.slots || []).length;
     const nIscritti = iscritti.filter(i => i.garaId === g.id).length;
-    return `
-      <div class="card">
-        <h3>${g.nome}</h3>
-        <div class="card-meta">
-          📅 ${g.data || 'Data non impostata'} ${g.ora || ''}
-          &nbsp;|&nbsp; 📍 ${g.localita || 'N/D'}
-          &nbsp;|&nbsp; 🏃 ${g.distanza || 'N/D'}
-          &nbsp;|&nbsp; 🎟️ ${nSlot} slot
-          &nbsp;|&nbsp; 👥 ${nIscritti} iscritti
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-warning" onclick="openModalGara('${g.id}')">✏️ Modifica</button>
-          <button class="btn btn-danger" onclick="eliminaGara('${g.id}')">🗑️ Elimina</button>
-          ${g.sito ? `<a href="${g.sito}" target="_blank" class="btn btn-secondary">🌐 Sito</a>` : ''}
-        </div>
+    return `<div class="card">
+      <h3>${g.nome}</h3>
+      <div class="card-meta">
+        📅 ${g.data || 'N/D'} ${g.ora || ''} &nbsp;|&nbsp;
+        📍 ${g.localita || 'N/D'} &nbsp;|&nbsp;
+        🏃 ${g.distanza || 'N/D'} &nbsp;|&nbsp;
+        🎟️ ${(g.slots||[]).length} slot &nbsp;|&nbsp;
+        👥 ${nIscritti} iscritti
       </div>
-    `;
+      <div class="card-actions">
+        <button class="btn btn-warning" onclick="openModalGara('${g.id}')">✏️ Modifica</button>
+        <button class="btn btn-danger" onclick="eliminaGara('${g.id}')">🗑️ Elimina</button>
+        ${g.sito ? `<a href="${g.sito}" target="_blank" class="btn btn-secondary">🌐 Sito</a>` : ''}
+      </div>
+    </div>`;
   }).join('');
 }
 
 function openModalGara(id = null) {
   document.getElementById('slots-container').innerHTML = '';
-  
+  document.getElementById('estrat-stato').textContent = '';
+  document.getElementById('estrat-testo').value = '';
+  document.getElementById('estrat-url').value = '';
+  slotCount = 0;
+
   if (id) {
     const g = gare.find(x => x.id === id);
     document.getElementById('modal-gara-title').textContent = 'Modifica Gara';
@@ -438,22 +494,14 @@ function openModalGara(id = null) {
     (g.slots || []).forEach(s => addSlot(s));
   } else {
     document.getElementById('modal-gara-title').textContent = 'Nuova Gara';
-    document.getElementById('gara-id').value = '';
-    document.getElementById('gara-nome').value = '';
-    document.getElementById('gara-data').value = '';
-    document.getElementById('gara-ora').value = '';
-    document.getElementById('gara-localita').value = '';
-    document.getElementById('gara-distanza').value = '';
-    document.getElementById('gara-sito').value = '';
-    document.getElementById('gara-facebook').value = '';
-    document.getElementById('gara-regolamento').value = '';
+    ['gara-id','gara-nome','gara-data','gara-ora','gara-localita','gara-distanza','gara-sito','gara-facebook','gara-regolamento'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
     addSlot();
   }
-  
   document.getElementById('modal-gara').classList.add('open');
 }
 
-let slotCount = 0;
 function addSlot(data = null) {
   slotCount++;
   const n = slotCount;
@@ -480,7 +528,7 @@ function addSlot(data = null) {
         <option ${data?.tipo === 'Non competitiva' ? 'selected' : ''}>Non competitiva</option>
       </select>
     </div>
-    <button class="btn btn-danger" onclick="document.getElementById('slot-${n}').remove()" style="margin-bottom:0;height:36px;">✕</button>
+    <button class="btn btn-danger" onclick="document.getElementById('slot-${n}').remove()" style="height:36px;">✕</button>
   `;
   document.getElementById('slots-container').appendChild(div);
 }
@@ -489,7 +537,6 @@ async function salvaGara() {
   const nome = document.getElementById('gara-nome').value.trim();
   if (!nome) { alert('Il nome della gara è obbligatorio.'); return; }
 
-  // Raccogli slot
   const slots = [];
   document.querySelectorAll('#slots-container .slot-row').forEach(row => {
     const n = row.id.split('-')[1];
@@ -506,8 +553,7 @@ async function salvaGara() {
 
   const id = document.getElementById('gara-id').value || Date.now().toString();
   const gara = {
-    id,
-    nome,
+    id, nome,
     data: document.getElementById('gara-data').value,
     ora: document.getElementById('gara-ora').value,
     localita: document.getElementById('gara-localita').value,
@@ -519,13 +565,11 @@ async function salvaGara() {
   };
 
   const idx = gare.findIndex(g => g.id === id);
-  if (idx >= 0) gare[idx] = gara;
-  else gare.push(gara);
+  if (idx >= 0) gare[idx] = gara; else gare.push(gara);
 
   await api('/gare', 'POST', gare);
   closeModal('modal-gara');
   renderGare();
-  renderDaIscrivere();
 }
 
 async function eliminaGara(id) {
@@ -547,46 +591,31 @@ function renderIscritti() {
     (gare.find(g => g.id === i.garaId)?.nome || '').toLowerCase().includes(search)
   );
   const el = document.getElementById('lista-iscritti');
-
-  if (filtered.length === 0) {
-    el.innerHTML = '<div class="empty">Nessun iscritto trovato.</div>';
-    return;
-  }
-
-  el.innerHTML = `
-    <table>
-      <thead><tr>
-        <th>Nominativo</th><th>Gara</th><th>Slot Scadenza</th>
-        <th>Stato</th><th>Pagamento</th><th>Azioni</th>
-      </tr></thead>
-      <tbody>
-        ${filtered.map(i => {
-          const gara = gare.find(g => g.id === i.garaId);
-          const slot = gara?.slots?.find(s => s.scadenza === i.slotScadenza);
-          const statoClass = i.stato === 'Iscritto ufficialmente' ? 'badge-green' : 'badge-orange';
-          const pagClass = i.pagamento === 'Pagato' ? 'badge-green' : 'badge-red';
-          return `<tr>
-            <td>${i.nome}</td>
-            <td>${gara?.nome || 'N/D'}</td>
-            <td>${i.slotScadenza || 'N/D'}</td>
-            <td><span class="badge ${statoClass}">${i.stato}</span></td>
-            <td><span class="badge ${pagClass}">${i.pagamento}</span></td>
-            <td>
-              <button class="btn btn-warning" onclick="openModalIscritto('${i.id}')">✏️</button>
-              <button class="btn btn-danger" onclick="eliminaIscritto('${i.id}')">🗑️</button>
-            </td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>
-  `;
+  if (filtered.length === 0) { el.innerHTML = '<div class="empty">Nessun iscritto trovato.</div>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Nominativo</th><th>Gara</th><th>Slot Scadenza</th><th>Stato</th><th>Pagamento</th><th>Azioni</th></tr></thead>
+    <tbody>${filtered.map(i => {
+      const gara = gare.find(g => g.id === i.garaId);
+      const statoClass = i.stato === 'Iscritto ufficialmente' ? 'badge-green' : 'badge-orange';
+      const pagClass = i.pagamento === 'Pagato' ? 'badge-green' : 'badge-red';
+      return `<tr>
+        <td>${i.nome}</td>
+        <td>${gara?.nome || 'N/D'}</td>
+        <td>${i.slotScadenza || 'N/D'}</td>
+        <td><span class="badge ${statoClass}">${i.stato}</span></td>
+        <td><span class="badge ${pagClass}">${i.pagamento}</span></td>
+        <td>
+          <button class="btn btn-warning" onclick="openModalIscritto('${i.id}')">✏️</button>
+          <button class="btn btn-danger" onclick="eliminaIscritto('${i.id}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
 }
 
 function openModalIscritto(id = null) {
-  // Popola select gare
   const selGara = document.getElementById('iscritto-gara');
   selGara.innerHTML = gare.map(g => `<option value="${g.id}">${g.nome}</option>`).join('');
-  
   if (id) {
     const i = iscritti.find(x => x.id === id);
     document.getElementById('modal-iscritto-title').textContent = 'Modifica Iscritto';
@@ -606,7 +635,6 @@ function openModalIscritto(id = null) {
     document.getElementById('iscritto-note').value = '';
     if (gare.length > 0) aggiornaSlotSelect(gare[0].id);
   }
-
   selGara.onchange = () => aggiornaSlotSelect(selGara.value);
   document.getElementById('modal-iscritto').classList.add('open');
 }
@@ -615,32 +643,24 @@ function aggiornaSlotSelect(garaId, selected = null) {
   const gara = gare.find(g => g.id === garaId);
   const sel = document.getElementById('iscritto-slot');
   sel.innerHTML = (gara?.slots || []).map(s =>
-    `<option value="${s.scadenza}" ${s.scadenza === selected ? 'selected' : ''}>
-      Scad. ${s.scadenza} — €${s.importo} — ${s.tipo}
-    </option>`
+    `<option value="${s.scadenza}" ${s.scadenza === selected ? 'selected' : ''}>Scad. ${s.scadenza} — €${s.importo} — ${s.tipo}</option>`
   ).join('') || '<option value="">Nessuno slot</option>';
 }
 
 async function salvaIscritto() {
   const nome = document.getElementById('iscritto-nome').value.trim();
   if (!nome) { alert('Il nominativo è obbligatorio.'); return; }
-
   const id = document.getElementById('iscritto-id').value || Date.now().toString();
   const garaId = document.getElementById('iscritto-gara').value;
   const iscritto = {
-    id,
-    nome,
-    garaId,
+    id, nome, garaId,
     slotScadenza: document.getElementById('iscritto-slot').value,
     stato: document.getElementById('iscritto-stato').value,
     pagamento: document.getElementById('iscritto-pagamento').value,
     note: document.getElementById('iscritto-note').value,
   };
-
   const idx = iscritti.findIndex(i => i.id === id);
-  if (idx >= 0) iscritti[idx] = iscritto;
-  else iscritti.push(iscritto);
-
+  if (idx >= 0) iscritti[idx] = iscritto; else iscritti.push(iscritto);
   await api('/iscritti', 'POST', iscritti);
   closeModal('modal-iscritto');
   renderIscritti();
@@ -659,36 +679,22 @@ async function eliminaIscritto(id) {
 function renderDaIscrivere() {
   const daIscrivere = iscritti.filter(i => i.stato === 'Da iscrivere');
   const el = document.getElementById('lista-daIscrivere');
-
-  if (daIscrivere.length === 0) {
-    el.innerHTML = '<div class="empty">✅ Nessun atleta da iscrivere ufficialmente.</div>';
-    return;
-  }
-
-  el.innerHTML = `
-    <table>
-      <thead><tr>
-        <th>Nominativo</th><th>Gara</th><th>Scadenza Slot</th>
-        <th>Pagamento</th><th>Note</th><th>Azioni</th>
-      </tr></thead>
-      <tbody>
-        ${daIscrivere.map(i => {
-          const gara = gare.find(g => g.id === i.garaId);
-          const pagClass = i.pagamento === 'Pagato' ? 'badge-green' : 'badge-red';
-          return `<tr>
-            <td><strong>${i.nome}</strong></td>
-            <td>${gara?.nome || 'N/D'}</td>
-            <td>${i.slotScadenza || 'N/D'}</td>
-            <td><span class="badge ${pagClass}">${i.pagamento}</span></td>
-            <td>${i.note || ''}</td>
-            <td>
-              <button class="btn btn-success" onclick="marcaIscritto('${i.id}')">✅ Iscritto</button>
-            </td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>
-  `;
+  if (daIscrivere.length === 0) { el.innerHTML = '<div class="empty">✅ Nessun atleta da iscrivere ufficialmente.</div>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Nominativo</th><th>Gara</th><th>Scadenza Slot</th><th>Pagamento</th><th>Note</th><th>Azioni</th></tr></thead>
+    <tbody>${daIscrivere.map(i => {
+      const gara = gare.find(g => g.id === i.garaId);
+      const pagClass = i.pagamento === 'Pagato' ? 'badge-green' : 'badge-red';
+      return `<tr>
+        <td><strong>${i.nome}</strong></td>
+        <td>${gara?.nome || 'N/D'}</td>
+        <td>${i.slotScadenza || 'N/D'}</td>
+        <td><span class="badge ${pagClass}">${i.pagamento}</span></td>
+        <td>${i.note || ''}</td>
+        <td><button class="btn btn-success" onclick="marcaIscritto('${i.id}')">✅ Iscritto</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
 }
 
 async function marcaIscritto(id) {
@@ -705,14 +711,12 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
 
-// Chiudi modal cliccando fuori
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => {
     if (e.target === overlay) overlay.classList.remove('open');
   });
 });
 
-// ===== INIT =====
 window.onload = async () => {
   const token = localStorage.getItem('camelot_token');
   if (token) {
