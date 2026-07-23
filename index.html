@@ -111,7 +111,7 @@
     .slot-row {
       display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr auto;
       gap: 8px; align-items: end; margin-bottom: 8px;
-    } 
+    }
     .slot-row .form-group { margin-bottom: 0; }
     
     .badge {
@@ -132,7 +132,6 @@
     .loading { text-align: center; padding: 40px; color: #666; }
     .empty { text-align: center; padding: 40px; color: #999; font-style: italic; }
 
-    /* ESTRATTORE */
     .estrattore-box {
       background: #e8f5e9; border: 2px solid #1a472a; border-radius: 8px;
       padding: 20px; margin-bottom: 20px;
@@ -149,13 +148,10 @@
       border-radius: 4px; font-size: 13px; margin-bottom: 8px;
     }
     .estrattore-input textarea { height: 120px; resize: vertical; }
-    .estrattore-stato {
-      font-size: 13px; color: #666; font-style: italic; margin-top: 8px;
-    }
+    .estrattore-stato { font-size: 13px; color: #666; font-style: italic; margin-top: 8px; }
     .estrattore-stato.ok { color: #28a745; font-style: normal; font-weight: bold; }
     .estrattore-stato.err { color: #dc3545; font-style: normal; }
 
-    /* PDF UPLOAD */
     .pdf-dropzone {
       border: 2px dashed #1a472a; border-radius: 8px; padding: 30px;
       text-align: center; cursor: pointer; background: white;
@@ -166,7 +162,6 @@
     .pdf-dropzone p { color: #666; font-size: 13px; margin-top: 8px; }
     .pdf-dropzone .pdf-nome { color: #1a472a; font-weight: bold; font-size: 14px; }
 
-    /* PANNELLO DATI SITO */
     .dati-sito-box {
       background: #fff8e1; border: 2px solid #f0c040; border-radius: 8px;
       padding: 20px; margin-bottom: 20px; display: none;
@@ -193,7 +188,6 @@
       white-space: pre-wrap;
     }
     .campo-valore.nullo { color: #999; font-style: italic; }
-
     .slot-sito-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
     .slot-sito-table th { background: #f0c040; color: #333; padding: 6px 8px; text-align: left; }
     .slot-sito-table td { padding: 6px 8px; border-bottom: 1px solid #ffe082; }
@@ -202,7 +196,6 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <h1>⚔️ Team Camelot</h1>
@@ -214,7 +207,6 @@
   </div>
 </div>
 
-<!-- APP -->
 <div id="app-screen">
   <header>
     <h1>⚔️ Team Camelot — Gestione Gare</h1>
@@ -258,18 +250,17 @@
   </div>
 </div>
 
-<!-- MODAL GARA -->
 <div class="modal-overlay" id="modal-gara">
   <div class="modal">
     <h2 id="modal-gara-title">Nuova Gara</h2>
 
-    <!-- ESTRATTORE AI -->
     <div class="estrattore-box">
       <h3>🤖 Estrai dati con AI</h3>
       <div class="estrattore-tabs">
         <button class="active" onclick="setEstratTab('testo', this)">Testo</button>
         <button onclick="setEstratTab('url', this)">Link URL</button>
         <button onclick="setEstratTab('pdf', this)">📄 PDF</button>
+        <button onclick="setEstratTab('img', this)">🖼️ Immagine</button>
       </div>
       <div class="estrattore-input">
         <textarea id="estrat-testo" placeholder="Incolla qui il testo del regolamento..."></textarea>
@@ -287,12 +278,24 @@
           </div>
           <input type="file" id="pdf-input" accept=".pdf" style="display:none;" onchange="handlePdfSelect(event)" />
         </div>
+        <div id="estrat-img-zone" style="display:none;">
+          <div class="pdf-dropzone" id="img-dropzone" onclick="document.getElementById('img-input').click()"
+            ondragover="event.preventDefault(); this.style.background='#d4edda'"
+            ondragleave="this.style.background=''"
+            ondrop="handleImgDrop(event)">
+            <div id="img-dropzone-content">
+              <div style="font-size:40px;">🖼️</div>
+              <p><strong>Trascina l'immagine qui</strong> oppure clicca per sfogliare</p>
+              <p style="font-size:11px;margin-top:4px;">JPG, PNG, WEBP</p>
+            </div>
+          </div>
+          <input type="file" id="img-input" accept="image/*" style="display:none;" onchange="handleImgSelect(event)" />
+        </div>
       </div>
       <button class="btn btn-info" onclick="estraiDati()">🔍 Estrai e compila campi</button>
       <div class="estrattore-stato" id="estrat-stato"></div>
     </div>
 
-    <!-- PANNELLO DATI PER IL SITO -->
     <div class="dati-sito-box" id="dati-sito-box">
       <h3>📋 Dati estratti per il sito Team Camelot</h3>
       <div class="campo-copia">
@@ -407,7 +410,6 @@
   </div>
 </div>
 
-<!-- MODAL ISCRITTO -->
 <div class="modal-overlay" id="modal-iscritto">
   <div class="modal">
     <h2 id="modal-iscritto-title">Nuovo Iscritto</h2>
@@ -525,6 +527,7 @@ function setEstratTab(tab, btn) {
   document.getElementById('estrat-testo').style.display = tab === 'testo' ? 'block' : 'none';
   document.getElementById('estrat-url').style.display = tab === 'url' ? 'block' : 'none';
   document.getElementById('estrat-pdf-zone').style.display = tab === 'pdf' ? 'block' : 'none';
+  document.getElementById('estrat-img-zone').style.display = tab === 'img' ? 'block' : 'none';
 }
 
 // ===== PDF =====
@@ -555,6 +558,34 @@ function caricaPdf(file) {
   reader.readAsDataURL(file);
 }
 
+// ===== IMMAGINE =====
+function handleImgSelect(event) {
+  const file = event.target.files[0];
+  if (file) caricaImg(file);
+}
+
+function handleImgDrop(event) {
+  event.preventDefault();
+  document.getElementById('img-dropzone').style.background = '';
+  const file = event.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) caricaImg(file);
+}
+
+function caricaImg(file) {
+  pdfMimeType = file.type;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    pdfBase64 = e.target.result.split(',')[1];
+    document.getElementById('img-dropzone').classList.add('has-file');
+    document.getElementById('img-dropzone-content').innerHTML = `
+      <div style="font-size:40px;">✅</div>
+      <p class="pdf-nome">${file.name}</p>
+      <p style="font-size:11px;color:#666;margin-top:4px;">${(file.size/1024/1024).toFixed(2)} MB — clicca per cambiare</p>
+    `;
+  };
+  reader.readAsDataURL(file);
+}
+
 function formattaData(dataStr) {
   if (!dataStr) return null;
   const [y, m, d] = dataStr.split('-');
@@ -576,11 +607,11 @@ async function estraiDati() {
 
   const testo = estrattoreTab === 'testo' ? document.getElementById('estrat-testo').value.trim() : null;
   const url = estrattoreTab === 'url' ? document.getElementById('estrat-url').value.trim() : null;
-  const pdf = estrattoreTab === 'pdf' ? pdfBase64 : null;
-  const pdfMime = estrattoreTab === 'pdf' ? pdfMimeType : null;
+  const pdf = (estrattoreTab === 'pdf' || estrattoreTab === 'img') ? pdfBase64 : null;
+  const pdfMime = (estrattoreTab === 'pdf' || estrattoreTab === 'img') ? pdfMimeType : null;
 
   if (!testo && !url && !pdf) {
-    stato.textContent = '⚠️ Inserisci un testo, un URL o carica un PDF.';
+    stato.textContent = '⚠️ Inserisci un testo, un URL, un PDF o un\'immagine.';
     stato.className = 'estrattore-stato err';
     return;
   }
@@ -596,7 +627,6 @@ async function estraiDati() {
 
     datiEstratti = result;
 
-    // Compila campi form
     if (result.nome) document.getElementById('gara-nome').value = result.nome;
     if (result.data) document.getElementById('gara-data').value = result.data;
     if (result.ora) document.getElementById('gara-ora').value = result.ora;
@@ -606,14 +636,12 @@ async function estraiDati() {
     if (result.facebook) document.getElementById('gara-facebook').value = result.facebook;
     if (result.regolamento) document.getElementById('gara-regolamento').value = result.regolamento;
 
-    // Slot
     if (result.slots && result.slots.length > 0) {
       document.getElementById('slots-container').innerHTML = '';
       slotCount = 0;
       result.slots.forEach(s => addSlot(s));
     }
 
-    // Mostra pannello dati sito
     popolaDatiSito(result);
     document.getElementById('dati-sito-box').style.display = 'block';
 
@@ -704,8 +732,25 @@ function openModalGara(id = null) {
   document.getElementById('estrat-url').value = '';
   document.getElementById('dati-sito-box').style.display = 'none';
   pdfBase64 = null;
+  pdfMimeType = null;
   slotCount = 0;
   datiEstratti = null;
+
+  // Reset dropzone PDF
+  document.getElementById('pdf-dropzone-content').innerHTML = `
+    <div style="font-size:40px;">📄</div>
+    <p><strong>Trascina il PDF qui</strong> oppure clicca per sfogliare</p>
+    <p style="font-size:11px;margin-top:4px;">Solo file .pdf</p>
+  `;
+  document.getElementById('pdf-dropzone').classList.remove('has-file');
+
+  // Reset dropzone Immagine
+  document.getElementById('img-dropzone-content').innerHTML = `
+    <div style="font-size:40px;">🖼️</div>
+    <p><strong>Trascina l'immagine qui</strong> oppure clicca per sfogliare</p>
+    <p style="font-size:11px;margin-top:4px;">JPG, PNG, WEBP</p>
+  `;
+  document.getElementById('img-dropzone').classList.remove('has-file');
 
   if (id) {
     const g = gare.find(x => x.id === id);
@@ -721,17 +766,11 @@ function openModalGara(id = null) {
     document.getElementById('gara-regolamento').value = g.regolamento || '';
     (g.slots || []).forEach(s => addSlot(s));
 
-    // Ripristina dati estratti e mostra pannello giallo se disponibili
     if (g.descrizione_html || g.descrizione_testo) {
       datiEstratti = {
-        nome: g.nome,
-        data: g.data,
-        ora: g.ora,
-        localita: g.localita,
-        distanza: g.distanza,
-        sito: g.sito,
-        facebook: g.facebook,
-        regolamento: g.regolamento,
+        nome: g.nome, data: g.data, ora: g.ora,
+        localita: g.localita, distanza: g.distanza,
+        sito: g.sito, facebook: g.facebook, regolamento: g.regolamento,
         email: g.email || null,
         descrizione_html: g.descrizione_html || null,
         descrizione_testo: g.descrizione_testo || null,
@@ -740,7 +779,6 @@ function openModalGara(id = null) {
       popolaDatiSito(datiEstratti);
       document.getElementById('dati-sito-box').style.display = 'block';
     }
-
   } else {
     document.getElementById('modal-gara-title').textContent = 'Nuova Gara';
     ['gara-id','gara-nome','gara-data','gara-ora','gara-localita','gara-distanza','gara-sito','gara-facebook','gara-regolamento'].forEach(id => {
