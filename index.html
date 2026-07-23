@@ -109,9 +109,9 @@
     tr:hover td { background: #f8f9fa; }
 
     .slot-row {
-      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr auto;
       gap: 8px; align-items: end; margin-bottom: 8px;
-    }
+    } 
     .slot-row .form-group { margin-bottom: 0; }
     
     .badge {
@@ -912,7 +912,7 @@ function aggiornaSlotSelect(garaId, selected = null) {
   const gara = gare.find(g => g.id === garaId);
   const sel = document.getElementById('iscritto-slot');
   sel.innerHTML = (gara?.slots || []).map(s =>
-    `<option value="${s.scadenza}" ${s.scadenza === selected ? 'selected' : ''}>Scad. ${s.scadenza} — €${s.importo} — ${s.tipo}</option>`
+    `<option value="${s.scadenza}" ${s.scadenza === selected ? 'selected' : ''}>Scad. ${s.scadenza} — €${s.importo} — ${s.distanza || ''} — ${s.tipo}</option>`
   ).join('') || '<option value="">Nessuno slot</option>';
 }
 
