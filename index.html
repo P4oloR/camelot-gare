@@ -216,6 +216,7 @@
     <button class="active" onclick="showSection('gare', this)">🏃 Gare</button>
     <button onclick="showSection('iscritti', this)">👥 Iscritti</button>
     <button onclick="showSection('daIscrivere', this)">⚠️ Da Iscrivere</button>
+    <button onclick="showSection('scadute', this)">🏁 Scadute</button>
   </nav>
 
   <div class="container">
@@ -246,6 +247,15 @@
         <h2>⚠️ Da Iscrivere Ufficialmente</h2>
       </div>
       <div id="lista-daIscrivere"><div class="loading">Caricamento...</div></div>
+    </div>
+     <div class="section" id="section-scadute">
+      <div class="top-bar">
+        <h2>🏁 Gare Scadute</h2>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="search-scadute" placeholder="Cerca gara scaduta..." oninput="renderScadute()" />
+      </div>
+      <div id="lista-scadute"><div class="loading">Caricamento...</div></div>
     </div>
   </div>
 </div>
@@ -509,6 +519,7 @@ async function caricaDati() {
   renderGare();
   renderIscritti();
   renderDaIscrivere();
+  renderScadute();
 }
 
 // ===== NAVIGAZIONE =====
@@ -702,7 +713,8 @@ function copiaCampo(id, btn) {
 // ===== GARE =====
 function renderGare() {
   const search = document.getElementById('search-gare').value.toLowerCase();
-  const filtered = gare.filter(g => g.nome.toLowerCase().includes(search));
+  const oggi = dataOggi();
+  const filtered = gare.filter(g => g.nome.toLowerCase().includes(search) && (!g.data || g.data >= oggi));
   const el = document.getElementById('lista-gare');
   if (filtered.length === 0) { el.innerHTML = '<div class="empty">Nessuna gara trovata.</div>'; return; }
   el.innerHTML = filtered.map(g => {
@@ -984,6 +996,34 @@ async function eliminaIscritto(id) {
   await api('/iscritti', 'POST', iscritti);
   renderIscritti();
   renderDaIscrivere();
+}
+
+function renderScadute() {
+  const search = document.getElementById('search-scadute').value.toLowerCase();
+  const oggi = dataOggi();
+  const filtered = gare.filter(g =>
+    g.data && g.data < oggi &&
+    g.nome.toLowerCase().includes(search)
+  ).sort((a, b) => b.data.localeCompare(a.data));
+  const el = document.getElementById('lista-scadute');
+  if (filtered.length === 0) { el.innerHTML = '<div class="empty">Nessuna gara scaduta.</div>'; return; }
+  el.innerHTML = filtered.map(g => {
+    const nIscritti = iscritti.filter(i => i.garaId === g.id).length;
+    return `<div class="card" style="opacity:0.7;">
+      <h3>${g.nome}</h3>
+      <div class="card-meta">
+        📅 ${g.data || 'N/D'} ${g.ora || ''} &nbsp;|&nbsp;
+        📍 ${g.localita || 'N/D'} &nbsp;|&nbsp;
+        🏃 ${g.distanza || 'N/D'} &nbsp;|&nbsp;
+        👥 ${nIscritti} iscritti
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-warning" onclick="openModalGara('${g.id}')">✏️ Modifica</button>
+        <button class="btn btn-danger" onclick="eliminaGara('${g.id}')">🗑️ Elimina</button>
+        ${g.sito ? `<a href="${g.sito}" target="_blank" class="btn btn-secondary">🌐 Sito</a>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ===== DA ISCRIVERE =====
