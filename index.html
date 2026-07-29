@@ -961,9 +961,11 @@ function openModalIscritto(id = null) {
 function aggiornaSlotSelect(garaId, selected = null) {
   const gara = gare.find(g => g.id === garaId);
   const sel = document.getElementById('iscritto-slot');
-  sel.innerHTML = (gara?.slots || []).map(s =>
-    `<option value="${s.scadenza}" ${s.scadenza === selected ? 'selected' : ''}>Scad. ${s.scadenza} — €${s.importo} — ${s.distanza || ''} — ${s.tipo}</option>`
-  ).join('') || '<option value="">Nessuno slot</option>';
+  sel.innerHTML = (gara?.slots || []).map(s => {
+    const slotData = JSON.stringify({ scadenza: s.scadenza, importo: s.importo, distanza: s.distanza || '', tipo: s.tipo });
+    const isSelected = s.scadenza === selected ? 'selected' : '';
+    return `<option value='${slotData}' ${isSelected}>Scad. ${s.scadenza} — €${s.importo} — ${s.distanza || ''} — ${s.tipo}</option>`;
+  }).join('') || '<option value="">Nessuno slot</option>';
 }
 
 async function salvaIscritto() {
@@ -973,9 +975,20 @@ async function salvaIscritto() {
   const esistente = id ? iscritti.find(i => i.id === id) : null;
   const nuovoId = id || Date.now().toString();
   const garaId = document.getElementById('iscritto-gara').value;
+  let slotScadenza = '', slotImporto = '', slotDistanza = '', slotTipo = '';
+  try {
+    const slotRaw = document.getElementById('iscritto-slot').value;
+    const slotParsed = JSON.parse(slotRaw);
+    slotScadenza = slotParsed.scadenza || '';
+    slotImporto = slotParsed.importo || '';
+    slotDistanza = slotParsed.distanza || '';
+    slotTipo = slotParsed.tipo || '';
+  } catch {
+    slotScadenza = document.getElementById('iscritto-slot').value;
+  }
   const iscritto = {
     id: nuovoId, nome, garaId,
-    slotScadenza: document.getElementById('iscritto-slot').value,
+    slotScadenza, slotImporto, slotDistanza, slotTipo,
     stato: document.getElementById('iscritto-stato').value,
     pagamento: document.getElementById('iscritto-pagamento').value,
     note: document.getElementById('iscritto-note').value,
