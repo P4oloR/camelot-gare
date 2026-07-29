@@ -200,7 +200,7 @@
   <div class="login-box">
     <h1>⚔️ Team Camelot</h1>
     <p>Gestione Gare — accesso riservato</p>
-    <input type="text" id="login-user" placeholder="Username (root o team)" />
+    <input type="text" id="login-user" placeholder="Username" />
     <input type="password" id="login-pass" placeholder="Password" />
     <button onclick="doLogin()">Accedi</button>
     <div class="error-msg" id="login-error"></div>
@@ -477,7 +477,7 @@ async function doLogin() {
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value.trim();
   if (!user || !pass) { document.getElementById('login-error').textContent = 'Inserisci username e password.'; return; }
-  if (user !== 'root' && user !== 'team') { document.getElementById('login-error').textContent = 'Username non valido.'; return; }
+  if (!['root', 'team', 'paolo', 'edwige'].includes(user)) { document.getElementById('login-error').textContent = 'Username non valido.'; return; }
   TOKEN = pass;
   const ok = await testToken();
   if (!ok) { document.getElementById('login-error').textContent = 'Password non corretta.'; TOKEN = null; return; }
