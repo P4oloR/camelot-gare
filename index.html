@@ -200,7 +200,7 @@
   <div class="login-box">
     <h1>⚔️ Team Camelot</h1>
     <p>Gestione Gare — accesso riservato</p>
-    <input type="text" id="login-user" placeholder="Username" />
+    <input type="text" id="login-user" placeholder="Username (root o team)" />
     <input type="password" id="login-pass" placeholder="Password" />
     <button onclick="doLogin()">Accedi</button>
     <div class="error-msg" id="login-error"></div>
@@ -477,7 +477,7 @@ async function doLogin() {
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value.trim();
   if (!user || !pass) { document.getElementById('login-error').textContent = 'Inserisci username e password.'; return; }
-  if (!['root', 'team', 'paolo', 'edwige'].includes(user)) { document.getElementById('login-error').textContent = 'Username non valido.'; return; }
+  if (user !== 'root' && user !== 'team') { document.getElementById('login-error').textContent = 'Username non valido.'; return; }
   TOKEN = pass;
   const ok = await testToken();
   if (!ok) { document.getElementById('login-error').textContent = 'Password non corretta.'; TOKEN = null; return; }
@@ -897,17 +897,25 @@ async function eliminaGara(id) {
 }
 
 // ===== ISCRITTI =====
+let sortIscrittiAsc = true;
+let sortDaIscrivereAsc = true;
+
 function renderIscritti() {
   const search = document.getElementById('search-iscritti').value.toLowerCase();
-  const filtered = iscritti.filter(i =>
+  let filtered = iscritti.filter(i =>
     i.nome.toLowerCase().includes(search) ||
     (gare.find(g => g.id === i.garaId)?.nome || '').toLowerCase().includes(search)
   );
+  filtered = filtered.sort((a, b) => {
+    const nomeA = (gare.find(g => g.id === a.garaId)?.nome || '').toLowerCase();
+    const nomeB = (gare.find(g => g.id === b.garaId)?.nome || '').toLowerCase();
+    return sortIscrittiAsc ? nomeA.localeCompare(nomeB) : nomeB.localeCompare(nomeA);
+  });
   const el = document.getElementById('lista-iscritti');
   if (filtered.length === 0) { el.innerHTML = '<div class="empty">Nessun iscritto trovato.</div>'; return; }
   el.innerHTML = `<table>
     <thead><tr>
-      <th>Nominativo</th><th>Gara</th><th>Slot Scadenza</th>
+      <th>Nominativo</th><th style="cursor:pointer" onclick="sortIscrittiAsc=!sortIscrittiAsc;renderIscritti()">Gara ${sortIscrittiAsc ? '↑' : '↓'}</th><th>Slot Scadenza</th>
       <th>Stato</th><th>Pagamento</th>
       <th>Data Iscrizione</th><th>Data Uff.</th><th>Azioni</th>
     </tr></thead>
@@ -1041,12 +1049,17 @@ function renderScadute() {
 
 // ===== DA ISCRIVERE =====
 function renderDaIscrivere() {
-  const daIscrivere = iscritti.filter(i => i.stato === 'Da iscrivere');
+  let daIscrivere = iscritti.filter(i => i.stato === 'Da iscrivere');
+  daIscrivere = daIscrivere.sort((a, b) => {
+    const nomeA = (gare.find(g => g.id === a.garaId)?.nome || '').toLowerCase();
+    const nomeB = (gare.find(g => g.id === b.garaId)?.nome || '').toLowerCase();
+    return sortDaIscrivereAsc ? nomeA.localeCompare(nomeB) : nomeB.localeCompare(nomeA);
+  });
   const el = document.getElementById('lista-daIscrivere');
   if (daIscrivere.length === 0) { el.innerHTML = '<div class="empty">✅ Nessun atleta da iscrivere ufficialmente.</div>'; return; }
   el.innerHTML = `<table>
     <thead><tr>
-      <th>Nominativo</th><th>Gara</th><th>Scadenza Slot</th>
+      <th>Nominativo</th><th style="cursor:pointer" onclick="sortDaIscrivereAsc=!sortDaIscrivereAsc;renderDaIscrivere()">Gara ${sortDaIscrivereAsc ? '↑' : '↓'}</th><th>Scadenza Slot</th>
       <th>Pagamento</th><th>Data Iscrizione</th><th>Note</th><th>Azioni</th>
     </tr></thead>
     <tbody>${daIscrivere.map(i => {
