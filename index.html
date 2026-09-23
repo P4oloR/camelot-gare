@@ -193,6 +193,7 @@
     .slot-sito-table td { padding: 6px 8px; border-bottom: 1px solid #ffe082; }
     .slot-sito-table tr:hover td { background: #fffde7; }
   </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -234,7 +235,10 @@
     <div class="section" id="section-iscritti">
       <div class="top-bar">
         <h2>Iscritti</h2>
-        <button class="btn btn-primary" onclick="openModalIscritto()">+ Nuovo Iscritto</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="exportIscritti()">⬇ Esporta XLS</button>
+          <button class="btn btn-primary" onclick="openModalIscritto()">+ Nuovo Iscritto</button>
+        </div>
       </div>
       <div class="search-bar">
         <input type="text" id="search-iscritti" placeholder="Cerca iscritto o gara..." oninput="renderIscritti()" />
@@ -245,6 +249,13 @@
     <div class="section" id="section-daIscrivere">
       <div class="top-bar">
         <h2>⚠️ Da Iscrivere Ufficialmente</h2>
+        <button class="btn btn-secondary" onclick="exportDaIscrivere()">⬇ Esporta XLS</button>
+      </div>
+      <div class="search-bar" style="display:flex;gap:8px;align-items:center">
+        <label for="filter-gara-daIscrivere" style="white-space:nowrap;font-size:13px">Filtra per gara:</label>
+        <select id="filter-gara-daIscrivere" onchange="renderDaIscrivere()" style="flex:1;padding:6px 8px;border-radius:6px;border:1px solid #ccc">
+          <option value="">Tutte le gare</option>
+        </select>
       </div>
       <div id="lista-daIscrivere"><div class="loading">Caricamento...</div></div>
     </div>
@@ -1049,7 +1060,10 @@ function renderScadute() {
 
 // ===== DA ISCRIVERE =====
 function renderDaIscrivere() {
+  aggiornaFiltroGare();
+  const filtroGara = document.getElementById('filter-gara-daIscrivere')?.value || '';
   let daIscrivere = iscritti.filter(i => i.stato === 'Da iscrivere');
+  if (filtroGara) daIscrivere = daIscrivere.filter(i => i.garaId === filtroGara);
   daIscrivere = daIscrivere.sort((a, b) => {
     const nomeA = (gare.find(g => g.id === a.garaId)?.nome || '').toLowerCase();
     const nomeB = (gare.find(g => g.id === b.garaId)?.nome || '').toLowerCase();
@@ -1098,6 +1112,69 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     if (e.target === overlay) overlay.classList.remove('open');
   });
 });
+
+function dataOggiFile() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function exportIscritti() {
+  const rows = iscritti.map(i => {
+    const gara = gare.find(g => g.id === i.garaId);
+    return {
+      'Nominativo': i.nome || '',
+      'Gara': gara?.nome || '',
+      'Distanza': i.slotDistanza || '',
+      'Importo (€)': i.slotImporto || '',
+      'Tipo': i.slotTipo || '',
+      'Scadenza Slot': i.slotScadenza || '',
+      'Stato': i.stato || '',
+      'Pagamento': i.pagamento || '',
+      'Data Iscrizione': i.dataIscrizione || '',
+      'Data Iscrizione Ufficiale': i.dataIscrizioneUfficiale || '',
+      'Note': i.note || '',
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Iscritti');
+  XLSX.writeFile(wb, `ISCRITTI_${dataOggiFile()}.xlsx`);
+}
+
+function exportDaIscrivere() {
+  const filtroGara = document.getElementById('filter-gara-daIscrivere')?.value || '';
+  let daIscrivere = iscritti.filter(i => i.stato === 'Da iscrivere');
+  if (filtroGara) daIscrivere = daIscrivere.filter(i => i.garaId === filtroGara);
+  const rows = daIscrivere.map(i => {
+    const gara = gare.find(g => g.id === i.garaId);
+    return {
+      'Nominativo': i.nome || '',
+      'Gara': gara?.nome || '',
+      'Distanza': i.slotDistanza || '',
+      'Importo (€)': i.slotImporto || '',
+      'Tipo': i.slotTipo || '',
+      'Scadenza Slot': i.slotScadenza || '',
+      'Pagamento': i.pagamento || '',
+      'Data Iscrizione': i.dataIscrizione || '',
+      'Note': i.note || '',
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Da Iscrivere');
+  XLSX.writeFile(wb, `DA_ISCRIVERE_${dataOggiFile()}.xlsx`);
+}
+
+function aggiornaFiltroGare() {
+  const sel = document.getElementById('filter-gara-daIscrivere');
+  if (!sel) return;
+  const garaIds = [...new Set(iscritti.filter(i => i.stato === 'Da iscrivere').map(i => i.garaId))];
+  const opzioni = garaIds.map(id => {
+    const gara = gare.find(g => g.id === id);
+    return `<option value="${id}">${gara?.nome || 'Gara sconosciuta'}</option>`;
+  }).join('');
+  sel.innerHTML = '<option value="">Tutte le gare</option>' + opzioni;
+}
 
 window.onload = async () => {
   const token = localStorage.getItem('camelot_token');
