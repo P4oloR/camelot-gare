@@ -1168,12 +1168,14 @@ function exportDaIscrivere() {
 function aggiornaFiltroGare() {
   const sel = document.getElementById('filter-gara-daIscrivere');
   if (!sel) return;
+  const valoreAttuale = sel.value; // preserva la selezione corrente
   const garaIds = [...new Set(iscritti.filter(i => i.stato === 'Da iscrivere').map(i => i.garaId))];
   const opzioni = garaIds.map(id => {
     const gara = gare.find(g => g.id === id);
     return `<option value="${id}">${gara?.nome || 'Gara sconosciuta'}</option>`;
   }).join('');
   sel.innerHTML = '<option value="">Tutte le gare</option>' + opzioni;
+  if (valoreAttuale) sel.value = valoreAttuale; // ripristina la selezione
 }
 
 window.onload = async () => {
