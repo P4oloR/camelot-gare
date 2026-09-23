@@ -909,7 +909,9 @@ async function eliminaGara(id) {
 
 // ===== ISCRITTI =====
 let sortIscrittiAsc = true;
+let sortIscrittiCampo = 'gara'; // 'gara' o 'nome'
 let sortDaIscrivereAsc = true;
+let sortDaIscrivereCampo = 'gara'; // 'gara' o 'nome'
 
 function renderIscritti() {
   const search = document.getElementById('search-iscritti').value.toLowerCase();
@@ -918,16 +920,25 @@ function renderIscritti() {
     (gare.find(g => g.id === i.garaId)?.nome || '').toLowerCase().includes(search)
   );
   filtered = filtered.sort((a, b) => {
-    const nomeA = (gare.find(g => g.id === a.garaId)?.nome || '').toLowerCase();
-    const nomeB = (gare.find(g => g.id === b.garaId)?.nome || '').toLowerCase();
-    return sortIscrittiAsc ? nomeA.localeCompare(nomeB) : nomeB.localeCompare(nomeA);
+    let valA, valB;
+    if (sortIscrittiCampo === 'nome') {
+      valA = (a.nome || '').toLowerCase();
+      valB = (b.nome || '').toLowerCase();
+    } else {
+      valA = (gare.find(g => g.id === a.garaId)?.nome || '').toLowerCase();
+      valB = (gare.find(g => g.id === b.garaId)?.nome || '').toLowerCase();
+    }
+    return sortIscrittiAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
   });
   const el = document.getElementById('lista-iscritti');
   if (filtered.length === 0) { el.innerHTML = '<div class="empty">Nessun iscritto trovato.</div>'; return; }
+  const arrowNome = sortIscrittiCampo === 'nome' ? (sortIscrittiAsc ? ' ↑' : ' ↓') : '';
+  const arrowGara = sortIscrittiCampo === 'gara' ? (sortIscrittiAsc ? ' ↑' : ' ↓') : '';
   el.innerHTML = `<table>
     <thead><tr>
-      <th>Nominativo</th><th style="cursor:pointer" onclick="sortIscrittiAsc=!sortIscrittiAsc;renderIscritti()">Gara ${sortIscrittiAsc ? '↑' : '↓'}</th><th>Slot Scadenza</th>
-      <th>Stato</th><th>Pagamento</th>
+      <th style="cursor:pointer" onclick="if(sortIscrittiCampo==='nome'){sortIscrittiAsc=!sortIscrittiAsc;}else{sortIscrittiCampo='nome';sortIscrittiAsc=true;}renderIscritti()">Nominativo${arrowNome}</th>
+      <th style="cursor:pointer" onclick="if(sortIscrittiCampo==='gara'){sortIscrittiAsc=!sortIscrittiAsc;}else{sortIscrittiCampo='gara';sortIscrittiAsc=true;}renderIscritti()">Gara${arrowGara}</th>
+      <th>Slot Scadenza</th><th>Stato</th><th>Pagamento</th>
       <th>Data Iscrizione</th><th>Data Uff.</th><th>Azioni</th>
     </tr></thead>
     <tbody>${filtered.map(i => {
@@ -1065,16 +1076,25 @@ function renderDaIscrivere() {
   let daIscrivere = iscritti.filter(i => i.stato === 'Da iscrivere');
   if (filtroGara) daIscrivere = daIscrivere.filter(i => i.garaId === filtroGara);
   daIscrivere = daIscrivere.sort((a, b) => {
-    const nomeA = (gare.find(g => g.id === a.garaId)?.nome || '').toLowerCase();
-    const nomeB = (gare.find(g => g.id === b.garaId)?.nome || '').toLowerCase();
-    return sortDaIscrivereAsc ? nomeA.localeCompare(nomeB) : nomeB.localeCompare(nomeA);
+    let valA, valB;
+    if (sortDaIscrivereCampo === 'nome') {
+      valA = (a.nome || '').toLowerCase();
+      valB = (b.nome || '').toLowerCase();
+    } else {
+      valA = (gare.find(g => g.id === a.garaId)?.nome || '').toLowerCase();
+      valB = (gare.find(g => g.id === b.garaId)?.nome || '').toLowerCase();
+    }
+    return sortDaIscrivereAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
   });
   const el = document.getElementById('lista-daIscrivere');
   if (daIscrivere.length === 0) { el.innerHTML = '<div class="empty">✅ Nessun atleta da iscrivere ufficialmente.</div>'; return; }
+  const arrowNomeD = sortDaIscrivereCampo === 'nome' ? (sortDaIscrivereAsc ? ' ↑' : ' ↓') : '';
+  const arrowGaraD = sortDaIscrivereCampo === 'gara' ? (sortDaIscrivereAsc ? ' ↑' : ' ↓') : '';
   el.innerHTML = `<table>
     <thead><tr>
-      <th>Nominativo</th><th style="cursor:pointer" onclick="sortDaIscrivereAsc=!sortDaIscrivereAsc;renderDaIscrivere()">Gara ${sortDaIscrivereAsc ? '↑' : '↓'}</th><th>Scadenza Slot</th>
-      <th>Pagamento</th><th>Data Iscrizione</th><th>Note</th><th>Azioni</th>
+      <th style="cursor:pointer" onclick="if(sortDaIscrivereCampo==='nome'){sortDaIscrivereAsc=!sortDaIscrivereAsc;}else{sortDaIscrivereCampo='nome';sortDaIscrivereAsc=true;}renderDaIscrivere()">Nominativo${arrowNomeD}</th>
+      <th style="cursor:pointer" onclick="if(sortDaIscrivereCampo==='gara'){sortDaIscrivereAsc=!sortDaIscrivereAsc;}else{sortDaIscrivereCampo='gara';sortDaIscrivereAsc=true;}renderDaIscrivere()">Gara${arrowGaraD}</th>
+      <th>Scadenza Slot</th><th>Pagamento</th><th>Data Iscrizione</th><th>Note</th><th>Azioni</th>
     </tr></thead>
     <tbody>${daIscrivere.map(i => {
       const gara = gare.find(g => g.id === i.garaId);
